@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
+const TOTAL_SEATS_PER_FLIGHT = 6;
+
 export async function GET() {
   try {
     const client = await clientPromise;
@@ -8,7 +10,9 @@ export async function GET() {
     const bookingsCollection = db.collection("bookings");
 
     const confirmedBookings = await bookingsCollection
-      .find({ status: "confirmed" })
+      .find({
+        status: "confirmed",
+      })
       .toArray();
 
     const bookedSeats: Record<string, number> = {};
@@ -32,6 +36,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
+      totalSeatsPerFlight: TOTAL_SEATS_PER_FLIGHT,
       bookedSeats,
     });
   } catch (error) {
